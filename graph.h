@@ -99,6 +99,18 @@ public:
     }
     return this->adj.at(v);
   }
+
+  edge<V, E> get_edge(const V &v1, const V &v2) const {
+    if (!this->adj.contains(v1)) {
+      throw std::invalid_argument("v1 not in graph");
+    }
+    for (const auto e : this->edges(v1)) {
+      if (e.v2 == v2) {
+        return e;
+      }
+    }
+    throw std::invalid_argument("edge not in graph");
+  }
   
 private:
   std::unordered_map<V, std::vector<edge<V, E>>> adj;

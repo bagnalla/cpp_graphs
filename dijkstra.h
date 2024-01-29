@@ -3,7 +3,6 @@
 #pragma once
 
 #include <optional>
-#include <variant>
 #include <vector>
 #include <unordered_map>
 
@@ -12,16 +11,9 @@
 
 namespace dijkstra {
   
-  // Dijkstra's shortest path algorithm. Returns two maps, the first
-  // mapping vertices to their distance via the shortest path from the
-  // source vertex (not guaranteed by this implementation to be
-  // optimal except for the destination vertex and all vertices on the
-  // path to it), and the second mapping vertices to their immediate
-  // predecessors on the shortest path from the source vertex (same
-  // caveat as above).
-
-  // For simplicity, we use a vector for the 'unvisited' queue and
-  // keep it sorted by distance from the source. We do this because
+  // Find the shortest path in [g] from [src] to [dest]. For
+  // simplicity, we use a vector for the 'unvisited' queue and keep it
+  // sorted by distance from the source. We do this because
   // std::priority_queue doesn't provide a 'decrease_key' operation,
   // so it would take a bit of work to get a proper priority queue
   // working (although it should be done to improve the time
@@ -41,8 +33,9 @@ namespace dijkstra {
   // another to remove it).
   
   template <typename V, Numeric E>
-  std::pair<std::unordered_map<V, E>, std::unordered_map<V, std::optional<V>>>
-  dijkstra(const graph<V, E> &g, const V &src, const V &dest) {
+  std::vector<edge<V, E>> shortest_path(const graph<V, E> &g,
+                                        const V &src,
+                                        const V &dest) {
     // Mapping of each vertex to its current tentative distance value.
     std::unordered_map<V, E> dist;
 
@@ -94,7 +87,7 @@ namespace dijkstra {
       // because it doesn't have to, for exactly the reason we just
       // described).
       if (u == dest) {
-        return {dist, pred};
+        return common::build_path(g, pred, src, dest);
       }
 
       // For each neighbor of 'u', update their tentative distance
@@ -104,7 +97,7 @@ namespace dijkstra {
         if (d < dist[e.v2]) {
           dist[e.v2] = d;
           pred[e.v2] = u;
-          if (std::find(unvisited.begin(), unvisited.end(), e.v2) == unvisited.end()) {
+          if (!common::contains(unvisited, e.v2)) {
             unvisited.push_back(e.v2);
           }
         }
@@ -114,17 +107,5 @@ namespace dijkstra {
     // If we've processed all vertices and never encountered the
     // destination, then it must not have existed in the graph.
     throw std::invalid_argument("destination doesn't exist");
-  }
-
-  // Compute the shortest path from [src] to [dest] in graph [g].
-  template <typename V, Numeric E>
-  std::vector<edge<V, std::monostate>> shortest_path(const graph<V, E> &g,
-                                                     const V &src,
-                                                     const V &dest) {
-    // Compute shortest paths to all vertices.
-    auto dist_pred = dijkstra(g, src, dest);
-
-    // Build and return path to the destination.
-    return common::build_path(dist_pred.second, src, dest);
   }
 }

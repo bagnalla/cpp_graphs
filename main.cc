@@ -7,8 +7,9 @@
 #include <string>
 
 #include "astar.h"
-#include "graph.h"
 #include "dijkstra.h"
+#include "graph.h"
+#include "prim.h"
 
 using namespace std;
 
@@ -45,10 +46,25 @@ vector<vector<int>> parse_matrix(const vector<string> &lines) {
   return matrix;
 }
 
+vector<vector<optional<int>>> parse_network(const vector<string> &lines) {
+  vector<vector<optional<int>>> network;
+  for (const auto line : lines) {
+    vector<optional<int>> row;
+    for (const auto s : split(line, ',')) {
+      if (s == "-") {
+        row.push_back({});
+      } else {
+        row.push_back(stoi(s));
+      }
+    }
+    network.push_back(row);
+  }
+  return network;
+}
+
 int main() {
   // Read file to vector of strings.
   vector<string> lines = read_lines("matrix.txt");
-  // vector<vector<int>> matrix = parse_matrix(lines);
   vector<vector<int>> matrix = parse_matrix(lines);
 
   // Build graph representation of the matrix.
@@ -95,4 +111,45 @@ int main() {
   }
   cout << sum << endl;
 
+  lines = read_lines("network.txt");
+  vector<vector<optional<int>>> network = parse_network(lines);
+
+  // Build graph representation of the network.
+  graph<int, int> network_g;
+
+  // Add vertices.
+  for (uint i = 0; i < network.size(); i++) {
+    network_g.add_vertex(i);
+  }
+
+  // Add edges.
+  for (uint i = 0; i < network.size(); i++) {
+    for (uint j = 0; j < network[i].size(); j++) {
+      if (network[i][j].has_value()) {
+        network_g.add_edge(i, j, network[i][j].value(), true);
+      }
+    }
+  }
+
+  // Compute total weight of entire graph.
+  uint total_weight = 0;
+  for (const auto v : network_g.vertices()) {
+    for (const auto e : network_g.edges(v)) {
+      total_weight += e.label;
+    }
+  }
+  total_weight /= 2;
+
+  // Build MST.
+  auto mst = prim::mst(network_g);
+
+  // Compute total weight of MST.
+  uint mst_weight = 0;
+  for (const auto e : mst) {
+    mst_weight += e.label;
+  }
+
+  // cout << total_weight << endl;
+  // cout << mst_weight << endl;
+  cout << total_weight - mst_weight << endl;
 }
