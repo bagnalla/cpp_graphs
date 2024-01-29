@@ -1,44 +1,17 @@
-// Dijkstra's shortest path algorithm. Currently doesn't use a proper
-// priority queue data structure, so performance is not as good as
-// possible.
+// Dijkstra's shortest path algorithm.
 
 #pragma once
 
-#include <iostream>
 #include <optional>
 #include <variant>
 #include <vector>
 #include <unordered_map>
 
 #include "graph.h"
-
-// The algorithm is generic in the type of edge labels, but it
-// requires them to be numeric (i.e., integers or floats).
-template <typename T>
-concept Numeric = std::integral<T> || std::floating_point<T>;
+#include "path.h"
 
 namespace dijkstra {
-
-  // Build path (vector of unlabeled edges) from src to dest using
-  // given predecessors map.
-  template <typename V>
-  std::vector<edge<V, std::monostate>>
-  build_path(std::unordered_map<V, std::optional<V>> &pred,
-             const V &src,
-             const V &dest) {
-    std::vector<edge<V, std::monostate>> path;
-    
-    V cur = dest;
-    while (pred[cur].has_value()) {
-      path.push_back({pred[cur].value(), cur, {}});
-      cur = pred[cur].value();
-    }
-
-    std::reverse(path.begin(), path.end());
-    
-    return path;
-  }
-
+  
   // Dijkstra's shortest path algorithm. Returns two maps, the first
   // mapping vertices to their distance via the shortest path from the
   // source vertex (not guaranteed by this implementation to be
@@ -51,23 +24,32 @@ namespace dijkstra {
   // 'decrease_key' operation, so it would take a bit of work to get a
   // proper priority queue working (although it should be done to
   // improve the time complexity of the algorithm).
+
+  // REMARK: actually, after changing the algorithm to initialize the
+  // 'unvisited' queue to only the source node and adding neighbors to
+  // the queue when they are first encountered, it performs quite well
+  // without a more complicated data structure (presumably due to the
+  // good cache performance of vectors compensating for the inferior
+  // time complexity -- for *very* large graphs it would still
+  // probably be better to use a binary/Fibonacci heap).
+  
   template <typename V, Numeric E>
   std::pair<std::unordered_map<V, E>, std::unordered_map<V, std::optional<V>>>
   dijkstra(const graph<V, E> &g, const V &src, const V &dest) {
-    // Maping of each vertex to its current tentative distance value.
+    // Mapping of each vertex to its current tentative distance value.
     std::unordered_map<V, E> dist;
 
-    // Maping of each vertex to its immediate predecessor on the
+    // Mapping of each vertex to its immediate predecessor on the
     // current best-known path from the source.
     std::unordered_map<V, std::optional<V>> pred;
 
     // Priority queue of unvisited vertices.
-    std::vector<V> unvisited;
+    std::vector<V> unvisited{src};
 
     // Comparison function for sorting in descending order so the
     // vertex with the least distance will be kept at the end of the
     // unvisited set.
-    auto comp = [&dist = std::as_const(dist)](const V &a, const V &b){
+    auto comp = [&dist = std::as_const(dist)](const V &a, const V &b) {
       return dist.at(a) > dist.at(b);
     };
 
@@ -80,7 +62,7 @@ namespace dijkstra {
       if (v != src) {
         dist[v] = std::numeric_limits<E>::max();
       }
-      unvisited.push_back(v);
+      // unvisited.push_back(v);
     }
 
     // Sort the 'unvisited' queue in descending order.
@@ -122,10 +104,13 @@ namespace dijkstra {
         if (d < dist[e.v2]) {
           dist[e.v2] = d;
           pred[e.v2] = u;
+          if (std::find(unvisited.begin(), unvisited.end(), e.v2) == unvisited.end()) {
+            unvisited.push_back(e.v2);
+          }
         }
       }
 
-      // Resort the 'unvisited' queue after updating neighbors'
+      // Re-sort the 'unvisited' queue after updating neighbors'
       // tentative distance values.
       std::sort(unvisited.begin(), unvisited.end(), comp);
     }
@@ -144,6 +129,6 @@ namespace dijkstra {
     auto dist_pred = dijkstra(g, src, dest);
 
     // Build and return path to the destination.
-    return build_path(dist_pred.second, src, dest);
+    return path::build_path(dist_pred.second, src, dest);
   }
 }

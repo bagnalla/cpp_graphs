@@ -6,6 +6,7 @@
 #include <sstream>
 #include <string>
 
+#include "astar.h"
 #include "graph.h"
 #include "dijkstra.h"
 
@@ -71,16 +72,27 @@ int main() {
     }
   }
 
-  // Compute the solution via Dijkstra's algorithm.
+  // // Compute the solution via Dijkstra's algorithm.
   const int src = 0;
   const int dest = 80 * 79 + 79;
-  auto path = dijkstra::shortest_path(g, src, dest);
-
+  
+  auto path1 = dijkstra::shortest_path(g, src, dest);
   // Compute path sum.
   int sum = matrix[0][0];
-  cout << sum << endl;
-  for (const auto e : path) {
+  for (const auto e : path1) {
     sum += matrix[e.v2 / 80][e.v2 % 80];
   }
   cout << sum << endl;
+
+  std::function<int(const int&)> h = [](const int &v) {
+    return 0;
+  };
+  auto path2 = astar::shortest_path(g, src, dest, h);
+  // Compute path sum again.
+  sum = matrix[0][0];
+  for (const auto e : path2) {
+    sum += matrix[e.v2 / 80][e.v2 % 80];
+  }
+  cout << sum << endl;
+
 }

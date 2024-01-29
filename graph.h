@@ -18,6 +18,13 @@ struct edge {
   E label; // Edge label.
 };
 
+// Although the graph type is fully generic in the type of edge
+// labels, many algorithms require them be numeric (to serve as
+// weights). See, for example, dijkstra.h and astar.h.
+template <typename T>
+concept Numeric = std::integral<T> || std::floating_point<T>;
+
+// The graph type.
 template <typename V, typename E>
 class graph {
 public:
