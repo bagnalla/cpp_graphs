@@ -5,7 +5,21 @@
 
 #include "graph.h"
 
-namespace path {
+namespace common {
+
+  // Argmin of vector [v] wrt. given score function [f]. I.e, [minᵢ(f(v[i]))].
+  template <typename T, Numeric N>
+  uint min_index(const std::vector<T> &v, std::function<N(const T&)> f) {
+    uint min_i = 0;
+    uint min = std::numeric_limits<T>::max();
+    for (uint i = 0; i < v.size(); i++) {
+      if (f(v[i]) < min) {
+        min_i = i;
+        min = f(v[i]);
+      }
+    }
+    return min_i;
+  }
   
   // Build path (vector of unlabeled edges) from src to dest using
   // given predecessors map.

@@ -30,7 +30,7 @@ class graph {
 public:
 
   // Add a vertex to the graph.
-  constexpr void add_vertex(V v) {
+  void add_vertex(V v) {
     if (this->adj.contains(v)) {
       throw std::invalid_argument("vertex already in graph");
     } else {
@@ -41,7 +41,7 @@ public:
   // Add an edge to the graph. If directed=false, a symmetric copy of
   // the edge is also added. If the edge (or its symmetric copy)
   // already exists, its label is updated with the new label.
-  constexpr void add_edge(const edge<V, E> &e, bool directed) {
+  void add_edge(const edge<V, E> &e, bool directed) {
     if (!this->adj.contains(e.v1)) {
       throw std::invalid_argument("v1 not in graph");
     }
@@ -84,7 +84,7 @@ public:
   }
 
   // Get all vertices (copies).
-  constexpr std::vector<V> vertices() const {
+  std::vector<V> vertices() const {
     std::vector<V> vs;
     for (const auto p : this->adj) {
       vs.push_back(p.first);
@@ -93,7 +93,7 @@ public:
   }
   
   // Get all edges (copies).
-  constexpr std::vector<edge<V, E>> edges(const V &v) const {
+  std::vector<edge<V, E>> edges(const V &v) const {
     if (!this->adj.contains(v)) {
       throw std::invalid_argument("vertex not in graph");
     }

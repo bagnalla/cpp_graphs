@@ -7,8 +7,8 @@
 #include <vector>
 #include <unordered_map>
 
+#include "common.h"
 #include "graph.h"
-#include "path.h"
 
 namespace dijkstra {
   
@@ -18,20 +18,27 @@ namespace dijkstra {
   // optimal except for the destination vertex and all vertices on the
   // path to it), and the second mapping vertices to their immediate
   // predecessors on the shortest path from the source vertex (same
-  // caveat as above). For simplicity, we use a vector for the
-  // 'unvisited' queue and keep it sorted by distance from the
-  // source. We do this because std::priority_queue doesn't provide a
-  // 'decrease_key' operation, so it would take a bit of work to get a
-  // proper priority queue working (although it should be done to
-  // improve the time complexity of the algorithm).
+  // caveat as above).
 
-  // REMARK: actually, after changing the algorithm to initialize the
+  // For simplicity, we use a vector for the 'unvisited' queue and
+  // keep it sorted by distance from the source. We do this because
+  // std::priority_queue doesn't provide a 'decrease_key' operation,
+  // so it would take a bit of work to get a proper priority queue
+  // working (although it should be done to improve the time
+  // complexity of the algorithm).
+
+  // REMARK: Actually, after changing the algorithm to initialize the
   // 'unvisited' queue to only the source node and adding neighbors to
   // the queue when they are first encountered, it performs quite well
   // without a more complicated data structure (presumably due to the
   // good cache performance of vectors compensating for the inferior
   // time complexity -- for *very* large graphs it would still
   // probably be better to use a binary/Fibonacci heap).
+
+  // UPDATE: It appears to be significantly faster when *not* keeping
+  // the 'unvisited' set (not calling it a queue anymore) sorted, and
+  // simply performing a linear scan to find the minimum element (and
+  // another to remove it).
   
   template <typename V, Numeric E>
   std::pair<std::unordered_map<V, E>, std::unordered_map<V, std::optional<V>>>
@@ -43,37 +50,30 @@ namespace dijkstra {
     // current best-known path from the source.
     std::unordered_map<V, std::optional<V>> pred;
 
-    // Priority queue of unvisited vertices.
+    // Set of unvisited vertices.
     std::vector<V> unvisited{src};
-
-    // Comparison function for sorting in descending order so the
-    // vertex with the least distance will be kept at the end of the
-    // unvisited set.
-    auto comp = [&dist = std::as_const(dist)](const V &a, const V &b) {
-      return dist.at(a) > dist.at(b);
-    };
 
     // Initialize source vertex distance to 0.
     dist[src] = static_cast<E>(0);
 
     // Initialize all other vertices with max distance value and push
-    // them to the 'unvisited' queue.
+    // them to the 'unvisited' set.
     for (const auto v : g.vertices()) {
       if (v != src) {
         dist[v] = std::numeric_limits<E>::max();
       }
-      // unvisited.push_back(v);
     }
-
-    // Sort the 'unvisited' queue in descending order.
-    std::sort(unvisited.begin(), unvisited.end(), comp);
 
     // Main loop.
     while (!unvisited.empty()) {
-      // Pop the vertex with the smallest tentative distance value
-      // from the 'unvisited' queue.
-      V u = unvisited.back();
-      unvisited.pop_back();
+      // Remove the vertex with the smallest tentative distance value
+      // from the 'unvisited' set.
+      std::function<E(const V&)> f = [&dist = std::as_const(dist)](const V &v) {
+        return dist.at(v);
+      };
+      uint min_i = common::min_index(unvisited, f);
+      V u = unvisited[min_i];
+      unvisited.erase(unvisited.begin() + min_i);
 
       // If its tentative distance value is still the max value, there
       // is no path to this vertex and thus there is no path to the
@@ -109,10 +109,6 @@ namespace dijkstra {
           }
         }
       }
-
-      // Re-sort the 'unvisited' queue after updating neighbors'
-      // tentative distance values.
-      std::sort(unvisited.begin(), unvisited.end(), comp);
     }
 
     // If we've processed all vertices and never encountered the
@@ -129,6 +125,6 @@ namespace dijkstra {
     auto dist_pred = dijkstra(g, src, dest);
 
     // Build and return path to the destination.
-    return path::build_path(dist_pred.second, src, dest);
+    return common::build_path(dist_pred.second, src, dest);
   }
 }

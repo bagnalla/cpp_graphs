@@ -1,16 +1,18 @@
 // A* shortest path. Agrees with Dijkstra's algorithm on Project Euler
 // problem 83 when the heuristic is set to the constant zero function,
-// but runs a bit slower. Need to test/compare on another problem for
-// which a suitable heuristic is available. Euclidean/Manhattan
-// distance doesn't seem useful at all for PE#83.
+// but runs slightly slower (presumably due to the extra overhead of
+// calling the heuristic function). Need to test/compare on another
+// problem for which a suitable heuristic is
+// available. Euclidean/Manhattan distance doesn't seem useful at all
+// for PE#83.
 
 #pragma once
 
 #include <functional>
 #include <variant>
 
+#include "common.h"
 #include "graph.h"
-#include "path.h"
 
 namespace astar {
   
@@ -30,15 +32,9 @@ namespace astar {
     // Open set (priority queue).
     std::vector<V> open{src};
 
-    auto f = [&dist = std::as_const(dist), &h = std::as_const(h)](const V &v) {
+    std::function<E(const V&)> f = [&dist = std::as_const(dist),
+                                    &h = std::as_const(h)](const V &v) {
       return dist.at(v) + h(v);
-    };
-
-    // Comparison function for sorting in descending order so the
-    // vertex with the least distance will be kept at the end of the
-    // unvisited set.
-    auto comp = [&f = std::as_const(f)](const V &a, const V &b) {
-      return f(a) > f(b);
     };
 
     // Initialize source vertex tentative distance value.
@@ -51,15 +47,12 @@ namespace astar {
       }
     }
 
-    // Sort the open set in descending order.
-    std::sort(open.begin(), open.end(), comp);
-
     // Main loop.
     while (!open.empty()) {
-      // Pop the vertex with the smallest tentative distance value
-      // from the open set.
-      V u = open.back();
-      open.pop_back();
+      // Remove the vertex with the smallest h score from the open set.
+      uint min_i = common::min_index(open, f);
+      V u = open[min_i];
+      open.erase(open.begin() + min_i);
 
       if (u == dest) {
         return {dist, pred};
@@ -75,10 +68,6 @@ namespace astar {
           }
         }
       }
-
-      // Re-sort the open set after updating neighbors' tentative
-      // distance values.
-      std::sort(open.begin(), open.end(), comp);
     }
     
     // If we've processed all vertices and never encountered the
@@ -97,6 +86,6 @@ namespace astar {
     auto dist_pred = astar(g, src, dest, h);
 
     // Build and return path to the destination.
-    return path::build_path(dist_pred.second, src, dest);
+    return common::build_path(dist_pred.second, src, dest);
   }
 }
