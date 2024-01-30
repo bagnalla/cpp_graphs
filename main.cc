@@ -1,5 +1,6 @@
 // Test shortest-path algorithms on Project Euler problem 83
-// (https://projecteuler.net/problem=83).
+// (https://projecteuler.net/problem=83), and MST algorithms on
+// problem 107 (https://projecteuler.net/problem=107).
 
 #include <fstream>
 #include <iostream>
@@ -7,6 +8,7 @@
 #include <string>
 
 #include "astar.h"
+#include "binary_heap.h"
 #include "dijkstra.h"
 #include "graph.h"
 #include "prim.h"
@@ -88,28 +90,29 @@ int main() {
     }
   }
 
-  // // Compute the solution via Dijkstra's algorithm.
-  const int src = 0;
-  const int dest = 80 * 79 + 79;
-  
-  auto path1 = dijkstra::shortest_path(g, src, dest);
-  // Compute path sum.
-  int sum = matrix[0][0];
-  for (const auto e : path1) {
-    sum += matrix[e.v2 / 80][e.v2 % 80];
-  }
-  cout << sum << endl;
+  // const int src = 0;
+  // const int dest = 80 * 79 + 79;
 
-  std::function<int(const int&)> h = [](const int &v) {
-    return 0;
-  };
-  auto path2 = astar::shortest_path(g, src, dest, h);
-  // Compute path sum again.
-  sum = matrix[0][0];
-  for (const auto e : path2) {
-    sum += matrix[e.v2 / 80][e.v2 % 80];
-  }
-  cout << sum << endl;
+  // // Solve with Dijkstra's algorithm.
+  // auto path1 = dijkstra::shortest_path2(g, src, dest);
+  // // Compute path sum.
+  // int sum = matrix[0][0];
+  // for (const auto e : path1) {
+  //   sum += matrix[e.v2 / 80][e.v2 % 80];
+  // }
+  // cout << sum << endl;
+
+  // // Solve with A*.
+  // std::function<int(const int&)> h = [](const int &v) {
+  //   return 0;
+  // };
+  // auto path2 = astar::shortest_path(g, src, dest, h);
+  // // Compute path sum again.
+  // sum = matrix[0][0];
+  // for (const auto e : path2) {
+  //   sum += matrix[e.v2 / 80][e.v2 % 80];
+  // }
+  // cout << sum << endl;
 
   lines = read_lines("network.txt");
   vector<vector<optional<int>>> network = parse_network(lines);
@@ -141,7 +144,7 @@ int main() {
   total_weight /= 2;
 
   // Build MST.
-  auto mst = prim::mst(network_g);
+  auto mst = prim::mst2(network_g);
 
   // Compute total weight of MST.
   uint mst_weight = 0;

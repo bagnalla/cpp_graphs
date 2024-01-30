@@ -6,6 +6,7 @@
 #include <vector>
 #include <unordered_map>
 
+#include "binary_heap.h"
 #include "common.h"
 #include "graph.h"
 
@@ -99,6 +100,89 @@ namespace dijkstra {
           pred[e.v2] = u;
           if (!common::contains(unvisited, e.v2)) {
             unvisited.push_back(e.v2);
+          }
+        }
+      }
+    }
+
+    // If we've processed all vertices and never encountered the
+    // destination, then it must not have existed in the graph.
+    throw std::invalid_argument("destination doesn't exist");
+  }
+
+  // Alternate version that uses a binary min-heap for the 'unvisited'
+  // set. Appears to perform better on the PE#83 example.
+  template <typename V, Numeric E>
+  std::vector<edge<V, E>> shortest_path2(const graph<V, E> &g,
+                                         const V &src,
+                                         const V &dest) {
+    // Mapping of each vertex to its current tentative distance value.
+    std::unordered_map<V, E> dist;
+
+    // Mapping of each vertex to its immediate predecessor on the
+    // current best-known path from the source.
+    std::unordered_map<V, std::optional<V>> pred;
+
+    // Initialize source vertex distance to 0.
+    dist[src] = static_cast<E>(0);
+
+    // Initialize all other vertices with max distance value and push
+    // them to the 'unvisited' set.
+    for (const auto v : g.vertices()) {
+      if (v != src) {
+        dist[v] = std::numeric_limits<E>::max();
+      }
+    }
+
+    // Set of unvisited vertices.
+    binary_heap<V, E> unvisited;
+    unvisited.insert(src, dist[src]);
+
+    // Main loop.
+    while (unvisited.size()) {
+      // Remove the vertex with the smallest tentative distance value
+      // from the 'unvisited' set.
+      // std::function<E(const V&)> f = [&dist = std::as_const(dist)](const V &v) {
+      //   return dist.at(v);
+      // };
+      // uint min_i = common::min_index(unvisited, f);
+      // V u = unvisited[min_i];
+      // unvisited.erase(unvisited.begin() + min_i);
+      V u = unvisited.extract().first;
+
+      // If its tentative distance value is still the max value, there
+      // is no path to this vertex and thus there is no path to the
+      // destination (because we would have terminated by now if the
+      // shortest path to the destination was found, and all remaining
+      // vertices are not reachable from the source).
+      if (dist[u] == std::numeric_limits<E>::max()) {
+        throw std::invalid_argument("path doesn't exist");
+      }
+
+      // If 'u' is the destination, then we're done. We know we've
+      // found the shortest path to it because the algorithm always
+      // explores the shortest known current path -- basically it's
+      // like a breadth-first search but wrt. weight rather than
+      // number of edges/vertices, so if it were to visit the same
+      // vertex later on it would be via a longer path (although that
+      // never happens because it never visits the same node twice
+      // because it doesn't have to, for exactly the reason we just
+      // described).
+      if (u == dest) {
+        return common::build_path(g, pred, src, dest);
+      }
+
+      // For each neighbor of 'u', update their tentative distance
+      // values if it becomes shorter through 'u'.
+      for (const auto e : g.edges(u)) {
+        const E d = dist[u] + e.label;
+        if (d < dist[e.v2]) {
+          dist[e.v2] = d;
+          pred[e.v2] = u;
+          if (!unvisited.contains(e.v2)) {
+            unvisited.insert(e.v2, d);
+          } else {
+            unvisited.decrease_key(e.v2, d);
           }
         }
       }
