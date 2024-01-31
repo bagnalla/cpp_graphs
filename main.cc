@@ -13,6 +13,7 @@
 #include "graph.h"
 #include "kahn.h"
 #include "prim.h"
+#include "union_find.h"
 
 using namespace std;
 
@@ -177,4 +178,13 @@ int main() {
     cout << v << " ";
   }
   cout << endl;
+
+  union_find<int> uf;
+  uf.add(0);
+  uf.add(1);
+  cout << uf.find(0) << endl;
+  cout << uf.find(1) << endl;
+  uf.set_union(0, 1);
+  cout << uf.find(0) << endl;
+  cout << uf.find(1) << endl;
 }
