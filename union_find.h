@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include <iostream>
-#include <memory>
 #include <ranges>
 #include <vector>
 
@@ -50,7 +48,6 @@ public:
       }
 
       // Make x_root the new root.
-      // y_root->parent = make_shared<node>(*x_root);
       y_root->parent = x_root;
       // If necessary, increment the rank of x_root.
       if (x_root->rank == y_root->rank) {

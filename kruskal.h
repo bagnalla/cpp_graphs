@@ -9,7 +9,7 @@
 #include "union_find.h"
 
 namespace kruskal {
-  template <typename V, Numeric E>
+  template <typename V, common::Numeric E>
   std::vector<edge<V, E>> mst(const graph<V, E> &g) {
     union_find<V> uf;
     std::vector<edge<V, E>> ms_forest;

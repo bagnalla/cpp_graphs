@@ -1,11 +1,16 @@
 #pragma once
 
-// #include <variant>
 #include <vector>
 
 #include "graph.h"
 
 namespace common {
+  
+  // Although the graph type is fully generic in the type of edge
+  // labels, many algorithms require them be numeric (to serve as
+  // weights). See, for example, dijkstra.h and astar.h.
+  template <typename T>
+  concept Numeric = std::integral<T> || std::floating_point<T>;
 
   template <typename T>
   constexpr bool contains(const std::vector<T> &v, const T &x) {

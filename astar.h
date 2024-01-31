@@ -17,7 +17,7 @@ namespace astar {
 
   // Find the shortest path in [g] from [src] to [dest] using
   // heuristic function [h].
-  template <typename V, Numeric E>
+  template <typename V, common::Numeric E>
   std::vector<edge<V, E>> shortest_path(const graph<V, E> &g,
                                         const V &src,
                                         const V &dest,

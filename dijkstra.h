@@ -33,7 +33,7 @@ namespace dijkstra {
   // simply performing a linear scan to find the minimum element (and
   // another to remove it).
   
-  template <typename V, Numeric E>
+  template <typename V, common::Numeric E>
   std::vector<edge<V, E>> shortest_path(const graph<V, E> &g,
                                         const V &src,
                                         const V &dest) {
@@ -102,7 +102,7 @@ namespace dijkstra {
 
   // Alternate version that uses a binary min-heap for the 'unvisited'
   // set. Appears to perform a bit better on the PE#83 example.
-  template <typename V, Numeric E>
+  template <typename V, common::Numeric E>
   std::vector<edge<V, E>> shortest_path2(const graph<V, E> &g,
                                          const V &src,
                                          const V &dest) {

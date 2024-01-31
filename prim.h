@@ -14,7 +14,7 @@
 
 namespace prim {
 
-  template <typename V, Numeric E>
+  template <typename V, common::Numeric E>
   std::vector<edge<V, E>> mst(const graph<V, E> &g) {
     // Mapping of each vertex to the edge providing its cheapest
     // connection to the MST so far (if one exists).
@@ -74,7 +74,7 @@ namespace prim {
 
   // Alternate version that uses a binary min-heap for the open
   // set. Appears to perform about the same on the PE#107 example.
-  template <typename V, Numeric E>
+  template <typename V, common::Numeric E>
   std::vector<edge<V, E>> mst2(const graph<V, E> &g) {
     // Mapping of each vertex to the edge providing its cheapest
     // connection to the MST so far (if one exists).
