@@ -50,8 +50,7 @@ namespace dijkstra {
     // Initialize source vertex distance to 0.
     dist[src] = static_cast<E>(0);
 
-    // Initialize all other vertices with max distance value and push
-    // them to the 'unvisited' set.
+    // Initialize all other vertices with max distance value.
     for (const auto v : g.vertices()) {
       if (v != src) {
         dist[v] = std::numeric_limits<E>::max();
@@ -68,15 +67,6 @@ namespace dijkstra {
       uint min_i = common::min_index(unvisited, f);
       V u = unvisited[min_i];
       unvisited.erase(unvisited.begin() + min_i);
-
-      // If its tentative distance value is still the max value, there
-      // is no path to this vertex and thus there is no path to the
-      // destination (because we would have terminated by now if the
-      // shortest path to the destination was found, and all remaining
-      // vertices are not reachable from the source).
-      if (dist[u] == std::numeric_limits<E>::max()) {
-        throw std::invalid_argument("path doesn't exist");
-      }
 
       // If 'u' is the destination, then we're done. We know we've
       // found the shortest path to it because the algorithm always
@@ -111,7 +101,7 @@ namespace dijkstra {
   }
 
   // Alternate version that uses a binary min-heap for the 'unvisited'
-  // set. Appears to perform better on the PE#83 example.
+  // set. Appears to perform a bit better on the PE#83 example.
   template <typename V, Numeric E>
   std::vector<edge<V, E>> shortest_path2(const graph<V, E> &g,
                                          const V &src,
@@ -126,8 +116,7 @@ namespace dijkstra {
     // Initialize source vertex distance to 0.
     dist[src] = static_cast<E>(0);
 
-    // Initialize all other vertices with max distance value and push
-    // them to the 'unvisited' set.
+    // Initialize all other vertices with max distance value.
     for (const auto v : g.vertices()) {
       if (v != src) {
         dist[v] = std::numeric_limits<E>::max();
@@ -142,22 +131,7 @@ namespace dijkstra {
     while (unvisited.size()) {
       // Remove the vertex with the smallest tentative distance value
       // from the 'unvisited' set.
-      // std::function<E(const V&)> f = [&dist = std::as_const(dist)](const V &v) {
-      //   return dist.at(v);
-      // };
-      // uint min_i = common::min_index(unvisited, f);
-      // V u = unvisited[min_i];
-      // unvisited.erase(unvisited.begin() + min_i);
       V u = unvisited.extract().first;
-
-      // If its tentative distance value is still the max value, there
-      // is no path to this vertex and thus there is no path to the
-      // destination (because we would have terminated by now if the
-      // shortest path to the destination was found, and all remaining
-      // vertices are not reachable from the source).
-      if (dist[u] == std::numeric_limits<E>::max()) {
-        throw std::invalid_argument("path doesn't exist");
-      }
 
       // If 'u' is the destination, then we're done. We know we've
       // found the shortest path to it because the algorithm always

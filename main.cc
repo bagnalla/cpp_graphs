@@ -68,42 +68,42 @@ vector<vector<optional<int>>> parse_network(const vector<string> &lines) {
 }
 
 int main() {
-  // // Read file to vector of strings.
-  // vector<string> lines = read_lines("matrix.txt");
-  // vector<vector<int>> matrix = parse_matrix(lines);
+  // Read file to vector of strings.
+  vector<string> lines = read_lines("matrix.txt");
+  vector<vector<int>> matrix = parse_matrix(lines);
 
-  // // Build graph representation of the matrix.
-  // graph<int, int> g;
-  // for (uint i = 0; i < matrix.size(); i++) {
-  //   for (uint j = 0; j < matrix[i].size(); j++) {
-  //     const int u = 80 * i + j;
-  //     g.add_vertex(u);
+  // Build graph representation of the matrix.
+  graph<int, int> g;
+  for (uint i = 0; i < matrix.size(); i++) {
+    for (uint j = 0; j < matrix[i].size(); j++) {
+      const int u = 80 * i + j;
+      g.add_vertex(u);
 
-  //     if (i > 0) {
-  //       const int v = 80 * (i-1) + j;
-  //       g.add_edge(u, v, matrix[i][j], true);
-  //       g.add_edge(v, u, matrix[i-1][j], true);
-  //     }
+      if (i > 0) {
+        const int v = 80 * (i-1) + j;
+        g.add_edge(u, v, matrix[i][j], true);
+        g.add_edge(v, u, matrix[i-1][j], true);
+      }
       
-  //     if (j > 0) {
-  //       const int v = 80 * i + (j-1);
-  //       g.add_edge(u, v, matrix[i][j], true);
-  //       g.add_edge(v, u, matrix[i][j-1], true);
-  //     }
-  //   }
-  // }
+      if (j > 0) {
+        const int v = 80 * i + (j-1);
+        g.add_edge(u, v, matrix[i][j], true);
+        g.add_edge(v, u, matrix[i][j-1], true);
+      }
+    }
+  }
 
-  // const int src = 0;
-  // const int dest = 80 * 79 + 79;
+  const int src = 0;
+  const int dest = 80 * 79 + 79;
 
-  // // Solve with Dijkstra's algorithm.
-  // auto path1 = dijkstra::shortest_path2(g, src, dest);
-  // // Compute path sum.
-  // int sum = matrix[0][0];
-  // for (const auto e : path1) {
-  //   sum += matrix[e.v2 / 80][e.v2 % 80];
-  // }
-  // cout << sum << endl;
+  // Solve with Dijkstra's algorithm.
+  auto path1 = dijkstra::shortest_path2(g, src, dest);
+  // Compute path sum.
+  int sum = matrix[0][0];
+  for (const auto e : path1) {
+    sum += matrix[e.v2 / 80][e.v2 % 80];
+  }
+  cout << sum << endl;
 
   // // Solve with A*.
   // std::function<int(const int&)> h = [](const int &v) {
@@ -117,37 +117,49 @@ int main() {
   // }
   // cout << sum << endl;
 
-  auto lines = read_lines("network.txt");
-  vector<vector<optional<int>>> network = parse_network(lines);
+  // auto lines = read_lines("network.txt");
+  // vector<vector<optional<int>>> network = parse_network(lines);
 
-  // Build graph representation of the network.
-  graph<int, int> network_g;
+  // // Build graph representation of the network.
+  // graph<int, int> network_g;
 
-  // Add vertices.
-  for (uint i = 0; i < network.size(); i++) {
-    network_g.add_vertex(i);
-  }
+  // // Add vertices.
+  // for (uint i = 0; i < network.size(); i++) {
+  //   network_g.add_vertex(i);
+  // }
 
-  // Add edges.
-  for (uint i = 0; i < network.size(); i++) {
-    for (uint j = 0; j < network[i].size(); j++) {
-      if (network[i][j].has_value()) {
-        network_g.add_edge(i, j, network[i][j].value(), true);
-      }
-    }
-  }
+  // // Add edges.
+  // for (uint i = 0; i < network.size(); i++) {
+  //   for (uint j = 0; j < network[i].size(); j++) {
+  //     if (network[i][j].has_value()) {
+  //       network_g.add_edge(i, j, network[i][j].value(), true);
+  //     }
+  //   }
+  // }
 
-  // Compute total weight of entire graph.
-  uint total_weight = 0;
-  for (const auto v : network_g.vertices()) {
-    for (const auto e : network_g.edges(v)) {
-      total_weight += e.label;
-    }
-  }
-  total_weight /= 2;
+  // // Compute total weight of entire graph.
+  // uint total_weight = 0;
+  // for (const auto v : network_g.vertices()) {
+  //   for (const auto e : network_g.edges(v)) {
+  //     total_weight += e.label;
+  //   }
+  // }
+  // total_weight /= 2;
+
+  // // // Build MST.
+  // // auto mst = prim::mst(network_g);
+  // // // cout << mst.size() << endl;
+
+  // // // Compute total weight of MST.
+  // // uint mst_weight = 0;
+  // // for (const auto e : mst) {
+  // //   mst_weight += e.label;
+  // // }
+  // // cout << total_weight - mst_weight << endl;
 
   // // Build MST.
-  // auto mst = prim::mst(network_g);
+  // auto mst = kruskal::mst(network_g);
+  // // cout << network_g.all_edges().size() << endl;
   // // cout << mst.size() << endl;
 
   // // Compute total weight of MST.
@@ -156,18 +168,6 @@ int main() {
   //   mst_weight += e.label;
   // }
   // cout << total_weight - mst_weight << endl;
-
-  // Build MST.
-  auto mst = kruskal::mst(network_g);
-  // cout << network_g.all_edges().size() << endl;
-  // cout << mst.size() << endl;
-
-  // Compute total weight of MST.
-  uint mst_weight = 0;
-  for (const auto e : mst) {
-    mst_weight += e.label;
-  }
-  cout << total_weight - mst_weight << endl;
 
 
   // graph<int, int> network_g2;
@@ -214,4 +214,5 @@ int main() {
   // cout << uf.find(1) << endl;
   // cout << uf.find(2) << endl;
   // cout << uf.find(3) << endl;
+  
 }
