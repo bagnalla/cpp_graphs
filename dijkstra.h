@@ -3,8 +3,8 @@
 #pragma once
 
 #include <optional>
-#include <vector>
 #include <unordered_map>
+#include <vector>
 
 #include "binary_heap.h"
 #include "common.h"

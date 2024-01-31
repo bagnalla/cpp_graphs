@@ -11,6 +11,7 @@
 #include "binary_heap.h"
 #include "dijkstra.h"
 #include "graph.h"
+#include "kahn.h"
 #include "prim.h"
 
 using namespace std;
@@ -65,30 +66,30 @@ vector<vector<optional<int>>> parse_network(const vector<string> &lines) {
 }
 
 int main() {
-  // Read file to vector of strings.
-  vector<string> lines = read_lines("matrix.txt");
-  vector<vector<int>> matrix = parse_matrix(lines);
+  // // Read file to vector of strings.
+  // vector<string> lines = read_lines("matrix.txt");
+  // vector<vector<int>> matrix = parse_matrix(lines);
 
-  // Build graph representation of the matrix.
-  graph<int, int> g;
-  for (uint i = 0; i < matrix.size(); i++) {
-    for (uint j = 0; j < matrix[i].size(); j++) {
-      const int u = 80 * i + j;
-      g.add_vertex(u);
+  // // Build graph representation of the matrix.
+  // graph<int, int> g;
+  // for (uint i = 0; i < matrix.size(); i++) {
+  //   for (uint j = 0; j < matrix[i].size(); j++) {
+  //     const int u = 80 * i + j;
+  //     g.add_vertex(u);
 
-      if (i > 0) {
-        const int v = 80 * (i-1) + j;
-        g.add_edge(u, v, matrix[i][j], true);
-        g.add_edge(v, u, matrix[i-1][j], true);
-      }
+  //     if (i > 0) {
+  //       const int v = 80 * (i-1) + j;
+  //       g.add_edge(u, v, matrix[i][j], true);
+  //       g.add_edge(v, u, matrix[i-1][j], true);
+  //     }
       
-      if (j > 0) {
-        const int v = 80 * i + (j-1);
-        g.add_edge(u, v, matrix[i][j], true);
-        g.add_edge(v, u, matrix[i][j-1], true);
-      }
-    }
-  }
+  //     if (j > 0) {
+  //       const int v = 80 * i + (j-1);
+  //       g.add_edge(u, v, matrix[i][j], true);
+  //       g.add_edge(v, u, matrix[i][j-1], true);
+  //     }
+  //   }
+  // }
 
   // const int src = 0;
   // const int dest = 80 * 79 + 79;
@@ -114,7 +115,7 @@ int main() {
   // }
   // cout << sum << endl;
 
-  lines = read_lines("network.txt");
+  auto lines = read_lines("network.txt");
   vector<vector<optional<int>>> network = parse_network(lines);
 
   // Build graph representation of the network.
@@ -155,4 +156,25 @@ int main() {
   // cout << total_weight << endl;
   // cout << mst_weight << endl;
   cout << total_weight - mst_weight << endl;
+
+  graph<int, int> network_g2;
+
+  // Add vertices.
+  for (uint i = 0; i < network.size(); i++) {
+    network_g2.add_vertex(i);
+  }
+
+  // Add edges.
+  for (uint i = 0; i < network.size(); i++) {
+    for (uint j = i+1; j < network[i].size(); j++) {
+      if (network[i][j].has_value()) {
+        network_g2.add_edge(i, j, network[i][j].value(), true);
+      }
+    }
+  }
+
+  for (const auto v : kahn::topsort(network_g2)) {
+    cout << v << " ";
+  }
+  cout << endl;
 }

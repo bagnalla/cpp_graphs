@@ -45,4 +45,14 @@ namespace common {
     
     return path;
   }
+
+  // This is weird -- perhaps there's a better way (besides
+  // 'std::ranges::to'). The idea is simply to collect the elements of
+  // a range/view into a vector.
+  template<typename T, std::ranges::forward_range R>
+  requires std::same_as<T, std::ranges::range_value_t<R>>
+  std::vector<T> collect(R &&r) {
+    return std::vector<T>(r.begin(), r.end());
+  }
+  
 }

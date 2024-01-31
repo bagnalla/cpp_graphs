@@ -2,11 +2,14 @@
 // a forest of minimum spanning trees for each connected component of
 // the graph, which is simply an MST when the graph is connected.
 
+// TODO: Kruskal's algorithm as well? Need a union-find data structure
+// to make it efficient.
+
 #pragma once
 
 #include <optional>
-#include <vector>
 #include <unordered_map>
+#include <vector>
 
 #include "binary_heap.h"
 #include "common.h"

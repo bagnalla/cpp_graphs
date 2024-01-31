@@ -10,3 +10,4 @@ Graph algorithms implemented:
 * Dijkstra's shortest path ([dijkstra.h](dijkstra.h)),
 * A* ([astar.h](astar.h)).
 * Prim's minimum spanning tree (forest) ([prim.h](prim.h)).
+* Kahn's topological sort ([kahn.h](kahn.h)).
