@@ -1,4 +1,4 @@
-// Union find data structure (union by rank). Not yet thoroughly tested.
+// Union find data structure (union by rank).
 
 #pragma once
 
@@ -15,7 +15,7 @@ class union_find {
 public:
   void add(const T &x) {
     if (!this->nodes.contains(x)) {
-      this->nodes[x] = node{x, NULL, 1};
+      this->nodes[x] = node{x, NULL, 0};
     }
   }
 
@@ -25,19 +25,19 @@ public:
 
   // Constant space version of 'find'.
   T find(const T &x) {
-    node root = this->nodes[x];
-    while (root.parent) {
-      root = *root.parent;
+    auto root = &this->nodes[x];
+    while (root->parent) {
+      root = root->parent;
     }
 
-    node cur = this->nodes[x];
-    while (cur.parent && cur.parent->el != root.el) {
-      auto parent = *cur.parent;
-      cur.parent = make_shared<node>(root);
+    auto cur = &this->nodes[x];
+    while (cur->parent && cur->parent->el != root->el) {
+      auto parent = cur->parent;
+      cur->parent = root;
       cur = parent;
     }
 
-    return root.el;
+    return root->el;
   }
 
   void set_union(const T &x, const T &y) {
@@ -48,20 +48,21 @@ public:
       if (x_root->rank < y_root->rank) {
         std::swap(x_root, y_root);
       }
-    }
 
-    // Make x_root the new root.
-    y_root->parent = make_shared<node>(*x_root);
-    // If necessary, increment the rank of x_root.
-    if (x_root->rank == y_root->rank) {
-      x_root->rank++;
+      // Make x_root the new root.
+      // y_root->parent = make_shared<node>(*x_root);
+      y_root->parent = x_root;
+      // If necessary, increment the rank of x_root.
+      if (x_root->rank == y_root->rank) {
+        x_root->rank++;
+      }
     }
   }
   
 private:
   struct node {
     T el;
-    std::shared_ptr<node> parent;
+    node *parent;
     uint rank;
   };
   std::unordered_map<T, node> nodes;

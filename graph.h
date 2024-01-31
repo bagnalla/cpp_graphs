@@ -105,6 +105,16 @@ public:
     return this->adj.at(v);
   }
 
+  std::vector<edge<V, E>> all_edges() const {
+    std::vector<edge<V, E>> edges;
+    for (const auto v : this->vertices()) {
+      for (const auto e : this->edges(v)) {
+        edges.push_back(e);
+      }
+    }
+    return edges;
+  }
+
   edge<V, E> get_edge(const V &v1, const V &v2) const {
     if (!this->adj.contains(v1)) {
       throw std::invalid_argument("v1 not in graph");

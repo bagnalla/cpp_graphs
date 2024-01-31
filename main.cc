@@ -12,6 +12,7 @@
 #include "dijkstra.h"
 #include "graph.h"
 #include "kahn.h"
+#include "kruskal.h"
 #include "prim.h"
 #include "union_find.h"
 
@@ -145,46 +146,72 @@ int main() {
   }
   total_weight /= 2;
 
+  // // Build MST.
+  // auto mst = prim::mst(network_g);
+  // // cout << mst.size() << endl;
+
+  // // Compute total weight of MST.
+  // uint mst_weight = 0;
+  // for (const auto e : mst) {
+  //   mst_weight += e.label;
+  // }
+  // cout << total_weight - mst_weight << endl;
+
   // Build MST.
-  auto mst = prim::mst2(network_g);
+  auto mst = kruskal::mst(network_g);
+  // cout << network_g.all_edges().size() << endl;
+  // cout << mst.size() << endl;
 
   // Compute total weight of MST.
   uint mst_weight = 0;
   for (const auto e : mst) {
     mst_weight += e.label;
   }
-
-  // cout << total_weight << endl;
-  // cout << mst_weight << endl;
   cout << total_weight - mst_weight << endl;
 
-  graph<int, int> network_g2;
 
-  // Add vertices.
-  for (uint i = 0; i < network.size(); i++) {
-    network_g2.add_vertex(i);
-  }
+  // graph<int, int> network_g2;
 
-  // Add edges.
-  for (uint i = 0; i < network.size(); i++) {
-    for (uint j = i+1; j < network[i].size(); j++) {
-      if (network[i][j].has_value()) {
-        network_g2.add_edge(i, j, network[i][j].value(), true);
-      }
-    }
-  }
+  // // Add vertices.
+  // for (uint i = 0; i < network.size(); i++) {
+  //   network_g2.add_vertex(i);
+  // }
 
-  for (const auto v : kahn::topsort(network_g2)) {
-    cout << v << " ";
-  }
-  cout << endl;
+  // // Add edges.
+  // for (uint i = 0; i < network.size(); i++) {
+  //   for (uint j = i+1; j < network[i].size(); j++) {
+  //     if (network[i][j].has_value()) {
+  //       network_g2.add_edge(i, j, network[i][j].value(), true);
+  //     }
+  //   }
+  // }
 
-  union_find<int> uf;
-  uf.add(0);
-  uf.add(1);
-  cout << uf.find(0) << endl;
-  cout << uf.find(1) << endl;
-  uf.set_union(0, 1);
-  cout << uf.find(0) << endl;
-  cout << uf.find(1) << endl;
+  // for (const auto v : kahn::topsort(network_g2)) {
+  //   cout << v << " ";
+  // }
+  // cout << endl;
+
+  // union_find<int> uf;
+  // uf.add(0);
+  // uf.add(1);
+  // cout << uf.find(0) << endl;
+  // cout << uf.find(1) << endl;
+  // uf.set_union(0, 1);
+  // cout << uf.find(0) << endl;
+  // cout << uf.find(1) << endl;
+  // uf.add(2);
+  // cout << uf.find(0) << endl;
+  // cout << uf.find(1) << endl;
+  // cout << uf.find(2) << endl;
+  // uf.add(3);
+  // uf.set_union(2, 3);
+  // cout << uf.find(0) << endl;
+  // cout << uf.find(1) << endl;
+  // cout << uf.find(2) << endl;
+  // cout << uf.find(3) << endl;
+  // uf.set_union(0, 2);
+  // cout << uf.find(0) << endl;
+  // cout << uf.find(1) << endl;
+  // cout << uf.find(2) << endl;
+  // cout << uf.find(3) << endl;
 }
