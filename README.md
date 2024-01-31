@@ -10,7 +10,7 @@ and a union-find (disjoint-set) data structure is defined in
 
 Graph algorithms implemented:
 * Dijkstra's shortest path ([dijkstra.h](dijkstra.h)),
-* A* ([astar.h](astar.h)).
-* Prim's minimum spanning tree (forest) ([prim.h](prim.h)).
-* Kruskal's minimum spanning tree (forest) ([kruskal.h](kruskal.h)).
+* A* ([astar.h](astar.h)),
+* Prim's minimum spanning tree (forest) ([prim.h](prim.h)),
+* Kruskal's minimum spanning tree (forest) ([kruskal.h](kruskal.h)),
 * Kahn's topological sort ([kahn.h](kahn.h)).
