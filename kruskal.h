@@ -14,7 +14,7 @@ namespace kruskal {
     union_find<V> uf;
     std::vector<edge<V, E>> ms_forest;
 
-    for (const auto v : g.vertices()) {
+    for (const auto &v : g.vertices()) {
       uf.add(v);
     }
 
@@ -24,7 +24,7 @@ namespace kruskal {
       return a.label < b.label;
     });
 
-    for (const auto e : edges) {
+    for (const auto &e : edges) {
       auto v1_set = uf.find(e.v1);
       auto v2_set = uf.find(e.v2);
       if (v1_set != v2_set) {

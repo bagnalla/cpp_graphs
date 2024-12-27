@@ -8,7 +8,7 @@
 template <typename K, std::totally_ordered V>
 class binary_heap {
 public:
-  
+
   // Insert a key/value pair into the heap.
   void insert(const K &k, const V &v) {
     if (!this->contains(k)) {
@@ -46,7 +46,7 @@ public:
   constexpr bool contains(const K &k) {
     return this->_ixs.contains(k);
   }
-  
+
 private:
   std::vector<std::pair<K, V>> _heap;
   std::unordered_map<K, uint> _ixs;

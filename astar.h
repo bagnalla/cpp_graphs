@@ -9,6 +9,7 @@
 #pragma once
 
 #include <functional>
+#include <utility>
 
 #include "common.h"
 #include "graph.h"
@@ -37,15 +38,13 @@ namespace astar {
       return dist.at(v) + h(v);
     };
 
+    // Initialize all vertices with max distance value.
+    for (const auto &v : g.vertices()) {
+      dist[v] = std::numeric_limits<E>::max();
+    }
+
     // Initialize source vertex tentative distance value.
     dist[src] = 0;
-
-    // Initialize all other vertices with max distance value.
-    for (const auto v : g.vertices()) {
-      if (v != src) {
-        dist[v] = std::numeric_limits<E>::max();
-      }
-    }
 
     // Main loop.
     while (!open.empty()) {
@@ -58,7 +57,7 @@ namespace astar {
         return common::build_path(g, pred, src, dest);
       }
 
-      for (const auto e : g.edges(u)) {
+      for (const auto &e : g.edges(u)) {
         const E d = dist[u] + e.label;
         if (d < dist[e.v2]) {
           dist[e.v2] = d;
@@ -69,7 +68,7 @@ namespace astar {
         }
       }
     }
-    
+
     // If we've processed all vertices and never encountered the
     // destination, then it must not have existed in the graph.
     throw std::invalid_argument("destination doesn't exist");

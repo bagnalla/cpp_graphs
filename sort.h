@@ -81,10 +81,10 @@ namespace sort {
 	  v[k] = a[j++];
 	}
       }
-      
+
       std::free(a);
     };
-    
+
     std::function<void(uint, uint)> sort;
     sort = [&merge, &sort](uint lb, uint ub) {
       if (ub - lb <= 1) {

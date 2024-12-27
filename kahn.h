@@ -21,7 +21,7 @@ namespace kahn {
     // Vector of topologically sorted vertices. Initially empty.
     std::vector<V> vertices;
 
-    // Find vertices with no incoming edges.    
+    // Find vertices with no incoming edges.
     // This is unfortunately strange and annoying compared to the
     // corresponding code in Rust. I would probably favor just writing
     // a simple loop instead. I'm not sure at the moment why we must
@@ -47,7 +47,7 @@ namespace kahn {
 
       // Delete the edges coming out of v. If this reduces the
       // indegree of any vertex to 0 then add it to 'no_inc'.
-      for (const auto e : g2.edges(v)) {
+      for (const auto &e : g2.edges(v)) {
         g2.remove_edge(e, true);
         if (g2.in_degree(e.v2) == 0) {
           no_inc.push_back(e.v2);

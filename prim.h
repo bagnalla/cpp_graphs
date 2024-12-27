@@ -31,7 +31,7 @@ namespace prim {
     };
 
     // Initialize all edges to 'none'.
-    for (const auto v : g.vertices()) {
+    for (const auto &v : g.vertices()) {
       edges[v] = {};
     }
 
@@ -60,7 +60,7 @@ namespace prim {
       // For all of the vertex's neighbors still in the open set,
       // update their cheapest edges if necessary (in case there's now
       // a cheaper edge through the current vertex).
-      for (const auto e : g.edges(u)) {
+      for (const auto &e : g.edges(u)) {
         if (common::contains(open, e.v2)) {
           if (e.label < cost(e.v2)) {
             edges[e.v2] = e;
@@ -68,7 +68,7 @@ namespace prim {
         }
       }
     }
-    
+
     return mst;
   }
 
@@ -91,7 +91,7 @@ namespace prim {
     };
 
     // Initialize all edges to 'none'.
-    for (const auto v : g.vertices()) {
+    for (const auto &v : g.vertices()) {
       edges[v] = {};
     }
 
@@ -101,7 +101,7 @@ namespace prim {
     // Initialize the open set to contain all the vertices.
     // std::vector<V> open = g.vertices();
     binary_heap<V, E> open;
-    for (const auto v : g.vertices()) {
+    for (const auto &v : g.vertices()) {
       open.insert(v, cost(v));
     }
 
@@ -125,7 +125,7 @@ namespace prim {
       // For all of the vertex's neighbors still in the open set,
       // update their cheapest edges if necessary (in case there's now
       // a cheaper edge through the current vertex).
-      for (const auto e : g.edges(u)) {
+      for (const auto &e : g.edges(u)) {
         if (open.contains(e.v2)) {
           if (e.label < cost(e.v2)) {
             edges[e.v2] = e;
@@ -134,7 +134,7 @@ namespace prim {
         }
       }
     }
-    
+
     return mst;
   }
 }

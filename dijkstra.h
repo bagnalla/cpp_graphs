@@ -2,8 +2,10 @@
 
 #pragma once
 
+#include <limits>
 #include <optional>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "binary_heap.h"
@@ -11,7 +13,7 @@
 #include "graph.h"
 
 namespace dijkstra {
-  
+
   // Find the shortest path in [g] from [src] to [dest]. For
   // simplicity, we use a vector for the 'unvisited' queue and keep it
   // sorted by distance from the source. We do this because
@@ -32,7 +34,7 @@ namespace dijkstra {
   // the 'unvisited' set (not calling it a queue anymore) sorted, and
   // simply performing a linear scan to find the minimum element (and
   // another to remove it).
-  
+
   template <typename V, common::Numeric E>
   std::vector<edge<V, E>> shortest_path(const graph<V, E> &g,
                                         const V &src,
@@ -47,15 +49,13 @@ namespace dijkstra {
     // Set of unvisited vertices.
     std::vector<V> unvisited{src};
 
+    // Initialize all vertices with max distance value.
+    for (const auto &v : g.vertices()) {
+      dist[v] = std::numeric_limits<E>::max();
+    }
+
     // Initialize source vertex distance to 0.
     dist[src] = static_cast<E>(0);
-
-    // Initialize all other vertices with max distance value.
-    for (const auto v : g.vertices()) {
-      if (v != src) {
-        dist[v] = std::numeric_limits<E>::max();
-      }
-    }
 
     // Main loop.
     while (!unvisited.empty()) {
@@ -83,7 +83,7 @@ namespace dijkstra {
 
       // For each neighbor of 'u', update their tentative distance
       // values if it becomes shorter through 'u'.
-      for (const auto e : g.edges(u)) {
+      for (const auto &e : g.edges(u)) {
         const E d = dist[u] + e.label;
         if (d < dist[e.v2]) {
           dist[e.v2] = d;
@@ -117,7 +117,7 @@ namespace dijkstra {
     dist[src] = static_cast<E>(0);
 
     // Initialize all other vertices with max distance value.
-    for (const auto v : g.vertices()) {
+    for (const auto &v : g.vertices()) {
       if (v != src) {
         dist[v] = std::numeric_limits<E>::max();
       }
@@ -148,7 +148,7 @@ namespace dijkstra {
 
       // For each neighbor of 'u', update their tentative distance
       // values if it becomes shorter through 'u'.
-      for (const auto e : g.edges(u)) {
+      for (const auto &e : g.edges(u)) {
         const E d = dist[u] + e.label;
         if (d < dist[e.v2]) {
           dist[e.v2] = d;

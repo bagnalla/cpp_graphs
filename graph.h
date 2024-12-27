@@ -14,7 +14,7 @@
 template <typename V, typename E>
 class graph {
 public:
-  
+
   // Directed edge.
   struct edge {
     V v1;    // Source vertex.
@@ -46,7 +46,7 @@ public:
     if (!this->adj.contains(e.v2)) {
       throw std::invalid_argument("v2 not in graph");
     }
-    
+
     if (auto x = std::find_if(this->adj[e.v1].begin(), this->adj[e.v1].end(),
                               [e](const edge &x) { return x.v2 == e.v2; });
         !multigraph && x != this->adj[e.v1].end()) {
@@ -65,7 +65,6 @@ public:
       }
     }
   }
-  
 
   // Helper function for adding an edge.
   constexpr void add_edge(const V &v1, const V &v2, const E &lbl,
@@ -84,12 +83,12 @@ public:
   // does not contain duplicates.
   std::vector<V> vertices() const {
     std::vector<V> vs;
-    for (const auto p : this->adj) {
+    for (const auto &p : this->adj) {
       vs.push_back(p.first);
     }
     return vs;
   }
-  
+
   // Get all edges (copies).
   constexpr std::vector<edge> edges(const V &v) const {
     if (!this->adj.contains(v)) {
@@ -100,8 +99,8 @@ public:
 
   std::vector<edge> all_edges() const {
     std::vector<edge> edges;
-    for (const auto v : this->vertices()) {
-      for (const auto e : this->edges(v)) {
+    for (const auto &v : this->vertices()) {
+      for (const auto &e : this->edges(v)) {
         edges.push_back(e);
       }
     }
@@ -112,7 +111,7 @@ public:
     if (!this->adj.contains(v1)) {
       throw std::invalid_argument("v1 not in graph");
     }
-    for (const auto e : this->edges(v1)) {
+    for (const auto &e : this->edges(v1)) {
       if (e.v2 == v2) {
         return e;
       }
@@ -123,11 +122,11 @@ public:
   // Subgraph induced by vertices [vs].
   graph<V, E> subgraph(const std::vector<V> &vs) {
     graph<V, E> g;
-    for (const auto v : vs) {
+    for (const auto &v : vs) {
       g.add_vertex(v);
     }
-    for (const auto v : vs) {
-      for (const auto e : this->edges[v]) {
+    for (const auto &v : vs) {
+      for (const auto &e : this->edges[v]) {
         g.add_edge(e, true, true);
       }
     }
@@ -145,7 +144,7 @@ public:
   constexpr uint out_degree(const V &v) const {
     return this->outdegree.at(v);
   }
-  
+
 private:
   std::unordered_map<V, std::vector<edge>> adj;
   std::unordered_map<V, uint> indegree;

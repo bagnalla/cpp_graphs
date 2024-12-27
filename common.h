@@ -1,11 +1,12 @@
 #pragma once
 
+#include <optional>
 #include <vector>
 
 #include "graph.h"
 
 namespace common {
-  
+
   // Although the graph type is fully generic in the type of edge
   // labels, many algorithms require them be numeric (to serve as
   // weights). See, for example, dijkstra.h and astar.h.
@@ -16,7 +17,7 @@ namespace common {
   constexpr bool contains(const std::vector<T> &v, const T &x) {
     return std::find(v.begin(), v.end(), x) != v.end();
   }
-  
+
   // Argmin of vector [v] wrt. given score function [f]. I.e, [minᵢ(f(v[i]))].
   template <typename T, Numeric N>
   uint min_index(const std::vector<T> &v, std::function<N(const T&)> f) {
@@ -30,7 +31,7 @@ namespace common {
     }
     return min_i;
   }
-  
+
   // Build path (vector of unlabeled edges) in [g] from [src] to
   // [dest] using given predecessors map [pred].
   template <typename V, typename E>
@@ -39,7 +40,7 @@ namespace common {
                                      const V &src,
                                      const V &dest) {
     std::vector<edge<V, E>> path;
-    
+
     V cur = dest;
     while (pred[cur].has_value()) {
       path.push_back({pred[cur].value(), cur, {}});
@@ -47,7 +48,7 @@ namespace common {
     }
 
     std::reverse(path.begin(), path.end());
-    
+
     return path;
   }
 
@@ -59,5 +60,4 @@ namespace common {
   std::vector<T> collect(R &&r) {
     return std::vector<T>(r.begin(), r.end());
   }
-  
 }

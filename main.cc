@@ -10,6 +10,7 @@
 
 #include "astar.h"
 #include "binary_heap.h"
+#include "dfs.h"
 #include "dijkstra.h"
 #include "graph.h"
 #include "kahn.h"
@@ -226,8 +227,7 @@ int main() {
     v.push_back(dist(rng));
   }
   sort::bubble_sort(v);
-  sort::selection_sort(v);  
-  sort::merge_sort(v);  
+  sort::selection_sort(v);
+  sort::merge_sort(v);
   cout << sort::is_sorted(v) << endl;
-  
 }
