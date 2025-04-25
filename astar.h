@@ -28,7 +28,7 @@ namespace astar {
 
     // Mapping of each vertex to its immediate predecessor on the
     // current best-known path from the source.
-    std::unordered_map<V, std::optional<V>> pred;
+    std::unordered_map<V, V> pred;
 
     // Open set (priority queue).
     std::vector<V> open{src};

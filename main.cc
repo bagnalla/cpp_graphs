@@ -99,11 +99,20 @@ int main() {
   const int src = 0;
   const int dest = 80 * 79 + 79;
 
-  // Solve with Dijkstra's algorithm.
-  auto path1 = dijkstra::shortest_path2(g, src, dest);
+  // Find path with DFS (not necessarily minimum weight).
+  const auto path0 = dfs::find_path(g, src, dest);
   // Compute path sum.
   int sum = matrix[0][0];
-  for (const auto e : path1) {
+  for (const auto &e : path0) {
+    sum += matrix[e.v2 / 80][e.v2 % 80];
+  }
+  cout << sum << endl;
+
+  // Solve with Dijkstra's algorithm.
+  const auto path1 = dijkstra::shortest_path2(g, src, dest);
+  // Compute path sum.
+  sum = matrix[0][0];
+  for (const auto &e : path1) {
     sum += matrix[e.v2 / 80][e.v2 % 80];
   }
   cout << sum << endl;
@@ -112,10 +121,10 @@ int main() {
   std::function<int(const int&)> h = [](const int &v) {
     return 0;
   };
-  auto path2 = astar::shortest_path(g, src, dest, h);
+  const auto path2 = astar::shortest_path(g, src, dest, h);
   // Compute path sum again.
   sum = matrix[0][0];
-  for (const auto e : path2) {
+  for (const auto &e : path2) {
     sum += matrix[e.v2 / 80][e.v2 % 80];
   }
   cout << sum << endl;

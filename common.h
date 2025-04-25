@@ -1,6 +1,5 @@
 #pragma once
 
-#include <optional>
 #include <vector>
 
 #include "graph.h"
@@ -36,15 +35,15 @@ namespace common {
   // [dest] using given predecessors map [pred].
   template <typename V, typename E>
   std::vector<edge<V, E>> build_path(const graph<V, E> &g,
-                                     std::unordered_map<V, std::optional<V>> &pred,
+                                     std::unordered_map<V, V> &pred,
                                      const V &src,
                                      const V &dest) {
     std::vector<edge<V, E>> path;
 
     V cur = dest;
-    while (pred[cur].has_value()) {
-      path.push_back({pred[cur].value(), cur, {}});
-      cur = pred[cur].value();
+    while (pred.contains(cur)) {
+      path.push_back({pred.at(cur), cur, {}});
+      cur = pred.at(cur);
     }
 
     std::reverse(path.begin(), path.end());

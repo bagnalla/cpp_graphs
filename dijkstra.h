@@ -3,7 +3,6 @@
 #pragma once
 
 #include <limits>
-#include <optional>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -44,7 +43,7 @@ namespace dijkstra {
 
     // Mapping of each vertex to its immediate predecessor on the
     // current best-known path from the source.
-    std::unordered_map<V, std::optional<V>> pred;
+    std::unordered_map<V, V> pred;
 
     // Set of unvisited vertices.
     std::vector<V> unvisited{src};
@@ -111,7 +110,7 @@ namespace dijkstra {
 
     // Mapping of each vertex to its immediate predecessor on the
     // current best-known path from the source.
-    std::unordered_map<V, std::optional<V>> pred;
+    std::unordered_map<V, V> pred;
 
     // Initialize source vertex distance to 0.
     dist[src] = static_cast<E>(0);
