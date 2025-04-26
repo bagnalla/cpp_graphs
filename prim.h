@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <optional>
 #include <unordered_map>
 #include <vector>
 
@@ -18,13 +17,13 @@ namespace prim {
   std::vector<edge<V, E>> mst(const graph<V, E> &g) {
     // Mapping of each vertex to the edge providing its cheapest
     // connection to the MST so far (if one exists).
-    std::unordered_map<V, std::optional<edge<V, E>>> edges;
+    std::unordered_map<V, edge<V, E>> edges;
 
     // Mapping of each vertex to the cost of its cheapest connection
     // to MST so far.
     std::function<E(const V&)> cost = [&edges = std::as_const(edges)](const V &v) {
-      if (edges.at(v).has_value()) {
-        return edges.at(v).value().label;
+      if (edges.contains(v)) {
+        return edges.at(v).label;
       } else {
         return std::numeric_limits<E>::max();
       }
@@ -53,8 +52,8 @@ namespace prim {
       // connecting edge. If this isn't true, then all the remaining
       // vertices must be disconnected from the MST built so far, so
       // we're starting an MST of a new connected component of g.
-      if (edges[u].has_value()) {
-        mst.push_back(edges[u].value());
+      if (edges.contains(u)) {
+        mst.push_back(edges.at(u));
       }
 
       // For all of the vertex's neighbors still in the open set,
