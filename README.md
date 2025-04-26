@@ -9,6 +9,7 @@ and a union-find (disjoint-set) data structure is defined in
 [union_find.h](union_find.h).
 
 Graph algorithms implemented:
+* Depth-first search ([dfs.h](dfs.h)),
 * Dijkstra's shortest path ([dijkstra.h](dijkstra.h)),
 * A* ([astar.h](astar.h)),
 * Prim's minimum spanning tree (forest) ([prim.h](prim.h)),
