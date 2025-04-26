@@ -3,8 +3,8 @@
 // zero function, but runs slightly slower (presumably due to the
 // extra overhead of calling the heuristic function). Need to
 // test/compare on another problem for which a suitable heuristic is
-// available. Euclidean/Manhattan distance doesn't seem useful at all
-// for PE#83.
+// available. Euclidean and Manhattan distance heuristics don't seem
+// useful at all for PE#83.
 
 #pragma once
 
